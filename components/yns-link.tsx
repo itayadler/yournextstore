@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import type { ComponentPropsWithRef } from "react";
+import { type ComponentPropsWithRef, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
 export const YnsLink = ({
@@ -20,7 +20,12 @@ export const YnsLink = ({
 	const strHref = typeof props.href === "string" ? props.href : props.href.href;
 
 	const pathname = usePathname();
-	const isActive = strHref && (exactHrefMatch ? pathname === strHref : pathname.startsWith(strHref));
+	const isActive = strHref && (exactHrefMatch ? pathname === strHref : pathname.startsWith(strHref || ""));
+
+	const [isMounted, setIsMounted] = useState(false);
+	useEffect(() => {
+		setIsMounted(true);
+	}, []);
 
 	const conditionalPrefetch = () => {
 		if (strHref && prefetch === "eager") {
@@ -33,7 +38,8 @@ export const YnsLink = ({
 			{...props}
 			prefetch={!!prefetch}
 			className={cn(className, isActive && activeClassName)}
-			{...(strHref &&
+			{...(isMounted &&
+				strHref &&
 				prefetch === "eager" && {
 					onMouseEnter: (e) => {
 						conditionalPrefetch();
