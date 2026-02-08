@@ -1,9 +1,16 @@
-import type { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
-import { commerce } from "./lib/commerce";
+import type {NextRequest} from "next/server";
+import {NextResponse} from "next/server";
+import {commerce} from "./lib/commerce";
+import {createMiddleware} from '@frontman-ai/nextjs';
 
+const frontman = createMiddleware({
+	host: 'frontman.local:4000',
+});
 export async function proxy(request: NextRequest) {
-	const { store, publicUrl } = await commerce.meGet();
+	if (request.nextUrl.pathname.startsWith('/__frontman')) {
+		return frontman(request) || NextResponse.next();
+	}
+	const {store, publicUrl} = await commerce.meGet();
 	const destinationUrl = new URL(publicUrl);
 
 	// Clone the request headers and set the correct x-forwarded-host
@@ -25,5 +32,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-	matcher: ["/checkout/:path*"],
+	matcher: ["/checkout/:path*", "/__frontman/:path*"],
 };

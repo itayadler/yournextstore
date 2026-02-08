@@ -50,7 +50,8 @@ export async function ProductGrid({
 				)}
 			</div>
 
-			<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+			{/* Pinterest-style masonry layout */}
+			<div className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
 				{displayProducts.map((product) => {
 					const variants = "variants" in product ? product.variants : null;
 					const firstVariantPrice = variants?.[0] ? BigInt(variants[0].price) : null;
@@ -85,38 +86,44 @@ export async function ProductGrid({
 					const secondaryImage = allImages[1];
 
 					return (
-						<YnsLink prefetch={"eager"} key={product.id} href={`/product/${product.slug}`} className="group">
-							<div className="relative aspect-square bg-secondary rounded-2xl overflow-hidden mb-4">
-								{primaryImage && (
-									<Image
-										src={primaryImage}
-										alt={product.name}
-										fill
-										sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-										className="object-cover transition-opacity duration-500 group-hover:opacity-0"
-									/>
-								)}
-								{secondaryImage && (
-									<Image
-										src={secondaryImage}
-										alt={`${product.name} - alternate view`}
-										fill
-										sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-										className="object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-									/>
-								)}
-							</div>
-							<div className="space-y-1">
-								<h3 className="text-base font-medium text-foreground">{product.name}</h3>
-								<p className="text-base font-semibold text-foreground">{priceDisplay}</p>
-							</div>
-						</YnsLink>
+						<div key={product.id} className="break-inside-avoid mb-6">
+							<YnsLink prefetch={"eager"} href={`/product/${product.slug}`} className="group block">
+								<div className="relative w-full bg-secondary rounded-2xl overflow-hidden mb-4">
+									{primaryImage && (
+										<>
+											<Image
+												src={primaryImage}
+												alt={product.name}
+												width={400}
+												height={500}
+												className="w-full h-auto object-cover transition-all duration-300 group-hover:scale-105"
+											/>
+											{secondaryImage && (
+												<Image
+													src={secondaryImage}
+													alt={`${product.name} - alternate view`}
+													width={400}
+													height={500}
+													className="absolute inset-0 w-full h-full object-cover opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:scale-105"
+												/>
+											)}
+										</>
+									)}
+								</div>
+								<div className="space-y-1 px-1">
+									<h3 className="text-base font-medium text-foreground group-hover:text-primary transition-colors">
+										{product.name}
+									</h3>
+									<p className="text-base font-semibold text-foreground">{priceDisplay}</p>
+								</div>
+							</YnsLink>
+						</div>
 					);
 				})}
 			</div>
 
 			{showViewAll && (
-				<div className="mt-12 text-center sm:hidden">
+				<div className="mt-12 text-center">
 					<YnsLink
 						prefetch={"eager"}
 						href={viewAllHref}
