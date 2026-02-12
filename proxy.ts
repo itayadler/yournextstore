@@ -7,7 +7,7 @@ const frontman = createMiddleware({
 	host: 'frontman.local:4000',
 });
 export async function proxy(request: NextRequest) {
-	if (request.nextUrl.pathname.startsWith('/__frontman')) {
+	if (request.nextUrl.pathname.startsWith('/frontman')) {
 		return frontman(request) || NextResponse.next();
 	}
 	const {store, publicUrl} = await commerce.meGet();
@@ -32,5 +32,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-	matcher: ["/checkout/:path*", "/__frontman/:path*"],
+	matcher: ["/checkout/:path*", "/frontman/:path*"],
 };
